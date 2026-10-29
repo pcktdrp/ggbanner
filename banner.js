@@ -11,11 +11,11 @@
     const banner = document.createElement("aside");
     banner.id = BANNER_ID;
     banner.setAttribute("role", "note");
-    banner.setAttribute("aria-label", "School web activity notice");
+    banner.setAttribute("aria-label", "District web activity notice");
 
     const label = document.createElement("span");
     label.className = "ggbanner__label";
-    label.textContent = "SCHOOL NOTICE";
+    label.textContent = "DISTRICT NOTICE";
 
     const message = document.createElement("span");
     message.className = "ggbanner__message";
