@@ -1,9 +1,0 @@
-{
-  "name": "ggbanner",
-  "private": true,
-  "version": "2.0.0",
-  "description": "Minimal GoGuardian web activity notice extension",
-  "scripts": {
-    "test": "node tests/validate.mjs"
-  }
-}
