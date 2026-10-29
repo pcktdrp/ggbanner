@@ -1,8 +1,0 @@
-# Private extension signing keys must never be committed
-*.pem
-*.key
-
-# Locally generated extension packages
-*.crx
-*.zip
-dist/
