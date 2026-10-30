@@ -12,7 +12,7 @@
   width: 100%;
   min-height: 28px;
   margin: 0;
-  padding: 5px 12px;
+  padding: 5px 42px 5px 12px;
   border: 0;
   border-bottom: 1px solid #cbd3dd;
   background: #eef1f5;
@@ -22,6 +22,13 @@
   letter-spacing: normal;
   text-transform: none;
   box-shadow: 0 1px 2px rgb(20 32 48 / 8%);
+  transform: translateY(0);
+  transition: transform 180ms ease;
+}
+
+#ggbanner-monitoring-notice.ggbanner--hidden {
+  transform: translateY(-110%);
+  pointer-events: none;
 }
 
 #ggbanner-monitoring-notice *,
@@ -45,9 +52,49 @@
   overflow-wrap: anywhere;
 }
 
+#ggbanner-monitoring-notice .ggbanner__hide {
+  all: initial;
+  box-sizing: border-box;
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  color: #44566c;
+  background: transparent;
+  font: 20px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+#ggbanner-monitoring-notice .ggbanner__hide:hover {
+  background: #dce2e9;
+}
+
+#ggbanner-monitoring-notice .ggbanner__hide:focus-visible {
+  outline: 2px solid #315f9b;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #ggbanner-monitoring-notice {
+    transition: none;
+  }
+}
+
 @media (max-width: 420px) {
   #ggbanner-monitoring-notice {
     gap: 2px 7px;
-    padding: 5px 8px;
+    padding: 5px 38px 5px 8px;
+  }
+
+  #ggbanner-monitoring-notice .ggbanner__hide {
+    right: 7px;
   }
 }
