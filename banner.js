@@ -49,7 +49,7 @@
         const currentScrollY = Math.max(0, window.scrollY);
         const difference = currentScrollY - lastScrollY;
 
-        if (currentScrollY <= 0 || difference < -SCROLL_THRESHOLD) {
+        if (currentScrollY <= 0) {
           banner.classList.remove(HIDDEN_CLASS);
         } else if (difference > SCROLL_THRESHOLD) {
           banner.classList.add(HIDDEN_CLASS);
