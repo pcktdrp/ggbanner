@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "GoGuardian Web Activity Notice",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Displays a notice that school web activity may be monitored and filtered by GoGuardian.",
   "content_scripts": [
     {
