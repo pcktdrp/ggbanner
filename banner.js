@@ -97,6 +97,10 @@
       isolation: isolate;
     }
 
+    .ggbanner__hide-label {
+      transform: translateX(-1px);
+    }
+
     .ggbanner__hide::before {
       content: "";
       position: absolute;
@@ -157,7 +161,10 @@
   hideButton.type = "button";
   hideButton.setAttribute("aria-label", "Hide district notice");
   hideButton.title = "Hide notice";
-  hideButton.textContent = "×";
+  const hideLabel = document.createElement("span");
+  hideLabel.className = "ggbanner__hide-label";
+  hideLabel.textContent = "×";
+  hideButton.append(hideLabel);
 
   let manuallyDismissed = false;
   let lastScrollY = window.scrollY;
