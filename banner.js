@@ -51,21 +51,23 @@
 
     .ggbanner__logo {
       display: block;
-      flex: 0 0 auto;
+      flex: 0 0 108px;
       width: 108px;
-      height: 18px;
+      height: 22px;
       object-fit: contain;
+      object-position: center;
     }
 
     .ggbanner__message {
-      display: inline-flex;
+      display: flex;
+      flex: 0 1 auto;
       align-items: center;
       align-self: center;
       min-height: 22px;
       color: #273548;
       font-size: 12px;
       font-weight: 400;
-      line-height: 22px;
+      line-height: 1.2;
       overflow-wrap: anywhere;
     }
 
@@ -87,9 +89,8 @@
       color: #44566c;
       background: transparent;
       font: 20px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      line-height: 22px;
+      line-height: 1;
       cursor: pointer;
-      transform: translateY(-1px);
       pointer-events: auto;
     }
 
@@ -115,9 +116,9 @@
       }
 
       .ggbanner__logo {
+        flex-basis: 92px;
         width: 92px;
-        height: auto;
-        max-height: 18px;
+        height: 22px;
       }
     }
   `;
