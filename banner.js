@@ -1,7 +1,8 @@
 (() => {
   "use strict";
 
-  const HOST_TAG = "ggbanner-notice-host";
+  // Use a built-in element so a page-registered custom-element constructor cannot run here.
+  const HOST_TAG = "div";
   const HIDDEN_CLASS = "ggbanner--hidden";
   const SCROLL_THRESHOLD = 8;
 
