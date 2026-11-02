@@ -69,7 +69,7 @@
       font-weight: 400;
       line-height: 1.2;
       overflow-wrap: anywhere;
-      transform: translateY(2px);
+      transform: translateY(1px);
     }
 
     .ggbanner__hide {
@@ -91,7 +91,7 @@
       background: transparent;
       font: 20px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       line-height: 1;
-      transform: translateY(2px);
+      transform: translateY(-1px);
       cursor: pointer;
       pointer-events: auto;
     }
