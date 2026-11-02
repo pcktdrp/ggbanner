@@ -200,6 +200,19 @@
   };
 
   function enforceHostStyles() {
+    const approvedProperties = new Set(Object.keys(hostStyles));
+
+    // Remove page-injected declarations that could conceal or reposition
+    // the host, while leaving the approved declarations intact.
+    for (let index = host.style.length - 1; index >= 0; index -= 1) {
+      const property = host.style.item(index);
+      if (!approvedProperties.has(property)) {
+        host.style.removeProperty(property);
+      }
+    }
+
+    // Repair approved declarations only when needed. This keeps the
+    // MutationObserver from creating a self-sustaining mutation loop.
     for (const [property, value] of Object.entries(hostStyles)) {
       if (
         host.style.getPropertyValue(property) !== value ||
