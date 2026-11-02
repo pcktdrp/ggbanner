@@ -9,9 +9,6 @@
         "http://*/*",
         "https://*/*"
       ],
-      "css": [
-        "banner.css"
-      ],
       "js": [
         "banner.js"
       ],
