@@ -41,6 +41,10 @@
       transition: transform 180ms ease;
     }
 
+    #notice {
+      pointer-events: auto;
+    }
+
     #notice.ggbanner--hidden {
       transform: translateY(-160%);
       pointer-events: none;
@@ -192,7 +196,7 @@
     border: "0",
     background: "transparent",
     transform: "translateX(-50%)",
-    "pointer-events": "auto"
+    "pointer-events": "none"
   };
 
   function enforceHostStyles() {
@@ -213,7 +217,10 @@
 
     enforceHostStyles();
 
-    if (!host.isConnected) {
+    if (
+      !host.isConnected ||
+      host.parentNode !== document.documentElement
+    ) {
       document.documentElement.append(host);
     }
   }
@@ -222,23 +229,44 @@
 
   // A page can still remove the host node from the shared document. Restore
   // it if that happens, and repair host styles if page CSS/JS changes them.
-  const observer = new MutationObserver((records) => {
+  let observedRoot = null;
+
+  const rootObserver = new MutationObserver((records) => {
     if (
       !host.isConnected ||
+      host.parentNode !== document.documentElement ||
       records.some((record) => record.target === host)
     ) {
       ensureHost();
     }
   });
 
-  if (document.documentElement) {
-    observer.observe(document.documentElement, {
+  function observeCurrentRoot() {
+    const currentRoot = document.documentElement;
+
+    if (!currentRoot || currentRoot === observedRoot) {
+      return;
+    }
+
+    rootObserver.disconnect();
+    observedRoot = currentRoot;
+    rootObserver.observe(currentRoot, {
       childList: true,
       subtree: true
     });
-    observer.observe(host, {
+    rootObserver.observe(host, {
       attributes: true,
       attributeFilter: ["style"]
     });
   }
+
+  // Observe the Document itself so replacing document.documentElement is
+  // detected; then move the subtree observer to the replacement root.
+  const documentObserver = new MutationObserver(() => {
+    ensureHost();
+    observeCurrentRoot();
+  });
+
+  documentObserver.observe(document, { childList: true });
+  observeCurrentRoot();
 })();
