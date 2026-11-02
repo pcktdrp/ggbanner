@@ -1,15 +1,11 @@
 (() => {
   "use strict";
 
-  // Use a built-in element so a page-registered custom-element constructor cannot run here.
-  const HOST_TAG = "div";
+  // Use a built-in element so page-registered custom elements cannot run here.
+  const host = document.createElement("div");
+  const shadow = host.attachShadow({ mode: "closed" });
   const HIDDEN_CLASS = "ggbanner--hidden";
   const SCROLL_THRESHOLD = 8;
-
-  // The closed shadow root keeps page styles and ordinary page scripts from
-  // reading or rewriting the notice's internal UI.
-  const host = document.createElement(HOST_TAG);
-  const shadow = host.attachShadow({ mode: "closed" });
 
   const style = document.createElement("style");
   style.textContent = `
@@ -40,15 +36,11 @@
       text-transform: none;
       box-shadow: 0 2px 8px rgb(20 32 48 / 14%);
       transition: transform 180ms ease;
-    }
-
-    #notice {
-      pointer-events: auto;
+      pointer-events: none;
     }
 
     #notice.ggbanner--hidden {
       transform: translateY(-160%);
-      pointer-events: none;
     }
 
     #notice *,
@@ -57,17 +49,12 @@
       box-sizing: border-box;
     }
 
-    .ggbanner__label {
-      display: inline-flex;
-      align-items: center;
-      align-self: center;
-      height: 22px;
-      color: #44566c;
-      font-size: 10px;
-      font-weight: 700;
-      line-height: 22px;
-      letter-spacing: 0.07em;
-      white-space: nowrap;
+    .ggbanner__logo {
+      display: block;
+      flex: 0 0 auto;
+      width: 108px;
+      height: 18px;
+      object-fit: contain;
     }
 
     .ggbanner__message {
@@ -103,6 +90,7 @@
       line-height: 22px;
       cursor: pointer;
       transform: translateY(-1px);
+      pointer-events: auto;
     }
 
     .ggbanner__hide:hover {
@@ -125,6 +113,12 @@
         gap: 8px;
         padding: 2px 7px 2px 10px;
       }
+
+      .ggbanner__logo {
+        width: 92px;
+        height: auto;
+        max-height: 18px;
+      }
     }
   `;
 
@@ -133,9 +127,11 @@
   notice.setAttribute("role", "note");
   notice.setAttribute("aria-label", "District web activity notice");
 
-  const label = document.createElement("span");
-  label.className = "ggbanner__label";
-  label.textContent = "DISTRICT NOTICE";
+  const logo = document.createElement("img");
+  logo.className = "ggbanner__logo";
+  logo.alt = "District notice";
+  logo.draggable = false;
+  logo.src = chrome.runtime.getURL("logo.png");
 
   const message = document.createElement("span");
   message.className = "ggbanner__message";
@@ -178,11 +174,11 @@
     { passive: true }
   );
 
-  notice.append(label, message, hideButton);
+  notice.append(logo, message, hideButton);
   shadow.append(style, notice);
 
-  // Important inline styles make ordinary page CSS less able to reposition
-  // or conceal the host. The page still cannot access the closed shadow root.
+  // Inline important declarations reduce interference from page styles.
+  // They cannot make a content script fully tamper-proof against its host page.
   const hostStyles = {
     all: "initial",
     position: "fixed",
@@ -190,6 +186,11 @@
     left: "50%",
     "z-index": "2147483647",
     display: "block",
+    visibility: "visible",
+    opacity: "1",
+    "content-visibility": "visible",
+    "clip-path": "none",
+    filter: "none",
     width: "max-content",
     height: "auto",
     margin: "0",
@@ -200,11 +201,16 @@
     "pointer-events": "none"
   };
 
-  function enforceHostStyles() {
+  function enforceHostState() {
+    // These attributes have no legitimate role on the extension-owned host.
+    for (const attribute of ["hidden", "inert", "aria-hidden", "class"]) {
+      if (host.hasAttribute(attribute)) {
+        host.removeAttribute(attribute);
+      }
+    }
+
     const approvedProperties = new Set(Object.keys(hostStyles));
 
-    // Remove page-injected declarations that could conceal or reposition
-    // the host, while leaving the approved declarations intact.
     for (let index = host.style.length - 1; index >= 0; index -= 1) {
       const property = host.style.item(index);
       if (!approvedProperties.has(property)) {
@@ -212,8 +218,6 @@
       }
     }
 
-    // Repair approved declarations only when needed. This keeps the
-    // MutationObserver from creating a self-sustaining mutation loop.
     for (const [property, value] of Object.entries(hostStyles)) {
       if (
         host.style.getPropertyValue(property) !== value ||
@@ -225,24 +229,20 @@
   }
 
   function ensureHost() {
-    if (!document.documentElement) {
+    const root = document.documentElement;
+    if (!root) {
       return;
     }
 
-    enforceHostStyles();
+    enforceHostState();
 
-    if (
-      !host.isConnected ||
-      host.parentNode !== document.documentElement
-    ) {
-      document.documentElement.append(host);
+    if (!host.isConnected || host.parentNode !== root) {
+      root.append(host);
     }
   }
 
   ensureHost();
 
-  // A page can still remove the host node from the shared document. Restore
-  // it if that happens, and repair host styles if page CSS/JS changes them.
   let observedRoot = null;
 
   const rootObserver = new MutationObserver((records) => {
@@ -257,7 +257,6 @@
 
   function observeCurrentRoot() {
     const currentRoot = document.documentElement;
-
     if (!currentRoot || currentRoot === observedRoot) {
       return;
     }
@@ -270,12 +269,11 @@
     });
     rootObserver.observe(host, {
       attributes: true,
-      attributeFilter: ["style"]
+      attributeFilter: ["style", "hidden", "inert", "aria-hidden", "class"]
     });
   }
 
-  // Observe the Document itself so replacing document.documentElement is
-  // detected; then move the subtree observer to the replacement root.
+  // Detect documentElement replacement and reconnect the host to the new root.
   const documentObserver = new MutationObserver(() => {
     ensureHost();
     observeCurrentRoot();
