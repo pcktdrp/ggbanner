@@ -222,11 +222,21 @@
 
   // A page can still remove the host node from the shared document. Restore
   // it if that happens, and repair host styles if page CSS/JS changes them.
-  const observer = new MutationObserver(ensureHost);
+  const observer = new MutationObserver((records) => {
+    if (
+      !host.isConnected ||
+      records.some((record) => record.target === host)
+    ) {
+      ensureHost();
+    }
+  });
+
   if (document.documentElement) {
     observer.observe(document.documentElement, {
       childList: true,
-      subtree: true,
+      subtree: true
+    });
+    observer.observe(host, {
       attributes: true,
       attributeFilter: ["style"]
     });
