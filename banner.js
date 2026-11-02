@@ -94,9 +94,20 @@
       transform: translateY(-1px);
       cursor: pointer;
       pointer-events: auto;
+      isolation: isolate;
     }
 
-    .ggbanner__hide:hover {
+    .ggbanner__hide::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      border-radius: 50%;
+      transform: translate(-1px, 1px);
+      pointer-events: none;
+    }
+
+    .ggbanner__hide:hover::before {
       background: #dce2e9;
     }
 
